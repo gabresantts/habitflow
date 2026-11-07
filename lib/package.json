@@ -1,0 +1,24 @@
+{
+  "name": "habitflow",
+  "version": "1.2.0",
+  "description": "HabitFlow - Sistema de Gerenciamento e Monitoramento de Hábitos Diários (API REST + Dashboard Web)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test tests/habit.test.js tests/demo.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gabresantts/habitflow.git"
+  },
+  "keywords": [
+    "habits",
+    "tracker",
+    "nodejs"
+  ],
+  "author": "Gabriel Olímpio",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
