@@ -1,15 +1,15 @@
-# HabitFlow - Especificação de Casos de Uso (Use Cases)
+# Especificação de Casos de Uso (Use Cases)
 
-Este documento descreve os atores do sistema e os fluxos de interação (principais, alternativos e de exceção) para as operações nucleares do **HabitFlow**.
+Este documento descreve os atores e especifica detalhadamente os fluxos principais, alternativos e de exceção para as operações centrais do sistema **HabitFlow**.
 
 ---
 
-## 1. Atores do Sistema
+## 1. Descrição dos Atores
 
 | Ator | Tipo | Descrição |
-| :--- | :--- | :--- |
-| **Usuário Regular** | Humano (Primário) | Indivíduo que interage com a aplicação para cadastrar hábitos, realizar check-ins diários, monitorar sequências e visualizar relatórios de produtividade. |
-| **Sistema HabitFlow** | Automatizado (Secundário) | Núcleo de serviços que processa validações, computa datas, streaks matemáticos, taxas percentuais de adesão e garante a integridade da persistência atômica. |
+| :--- | :---: | :--- |
+| **Usuário** | Primário | Pessoa física (estudante ou profissional) que utiliza o HabitFlow para planejar seus hábitos, registrar *check-ins* diários e acompanhar suas métricas de consistência. |
+| **Motor de Estatísticas (Sistema)** | Secundário / Interno | Subsistema responsável por processar o histórico de datas de cada hábito e recalcular em tempo real as ofensivas (*streaks*) e indicadores do dashboard. |
 
 ---
 
@@ -17,139 +17,140 @@ Este documento descreve os atores do sistema e os fluxos de interação (princip
 
 ```mermaid
 flowchart LR
-    User["👤 Usuário Regular"]
+    User(["Usuário"])
     
-    subgraph HabitFlow["Sistema HabitFlow"]
-        UC01["UC01: Cadastrar Hábito"]
-        UC02["UC02: Registrar Check-in Diário"]
-        UC03["UC03: Consultar Streaks e Métricas"]
-        UC04["UC04: Arquivar Hábito"]
-        UC05["UC05: Desfazer Check-in"]
-        UC06["UC06: Exportar/Importar Backup"]
+    subgraph HabitFlow ["Sistema HabitFlow"]
+        UC01(["UC01 - Cadastrar Hábito"])
+        UC02(["UC02 - Consultar e Filtrar Hábitos"])
+        UC03(["UC03 - Editar ou Excluir Hábito"])
+        UC04(["UC04 - Registrar Check-in Diário"])
+        UC05(["UC05 - Visualizar Estatísticas e Streaks"])
     end
-    
+
     User --> UC01
     User --> UC02
     User --> UC03
     User --> UC04
     User --> UC05
-    User --> UC06
+    UC04 -. "<<include>>" .-> UC05
 ```
 
 ---
 
 ## 3. Especificação Detalhada dos Casos de Uso
 
-### UC01: Cadastrar Novo Hábito
-- **Ator Principal**: Usuário Regular.
-- **Objetivo**: Inserir um novo hábito na rotina do usuário para acompanhamento diário.
-- **Pré-condições**: Nenhuma.
-- **Pós-condições**: O hábito é persistido no armazenamento com status ativo, zero check-ins e streak inicial zerado.
+### UC01 — Cadastrar Hábito
+- **Ator Principal:** Usuário
+- **Requisitos Relacionados:** RF01, RF08
+- **Pré-condições:** O sistema deve estar em execução e acessível pelo navegador ou cliente HTTP.
+- **Pós-condições:** Um novo hábito é persistido com histórico inicial vazio e exibido na listagem.
 
-#### Fluxo Principal
-1. O usuário solicita a criação de um hábito informando o título (ex.: "Beber 2L de água").
-2. O usuário define opcionalmente a descrição, a categoria (ex.: "Saúde") e a meta semanal de frequência (ex.: 7 dias).
-3. O sistema valida os campos obrigatórios e sanitiza as entradas.
-4. O sistema gera um identificador único alfanumérico para o hábito.
-5. O sistema persiste a entidade com data de criação e status `ativo`.
-6. O sistema exibe mensagem de sucesso com os detalhes do hábito cadastrado.
-
-#### Fluxos Alternativos
-- **A1: Ausência de Categoria ou Frequência**
-  - No passo 2, caso o usuário não informe a categoria ou meta semanal, o sistema aplica os valores default: Categoria `Outros` e frequência de `7` dias por semana. O fluxo retorna ao passo 3.
-
-#### Fluxos de Exceção
-- **E1: Título Vazio ou Apenas Espaços em Branco**
-  - No passo 3, caso o título esteja ausente ou contenha menos de 3 caracteres, o sistema rejeita a operação com a mensagem de erro `"Erro de Validação: O título do hábito deve conter no mínimo 3 caracteres."`. O caso de uso é encerrado sem persistência.
-- **E2: Frequência Alvo Fora do Intervalo Permitido**
-  - No passo 3, caso o usuário informe frequência semanal menor que 1 ou maior que 7, o sistema exibe `"Erro: A frequência semanal deve estar entre 1 e 7 dias."`. O caso de uso é encerrado.
-
----
-
-### UC02: Registrar Check-in Diário
-- **Ator Principal**: Usuário Regular.
-- **Objetivo**: Confirmar que o hábito selecionado foi executado em determinada data.
-- **Pré-condições**: O hábito deve existir e estar com status ativo.
-- **Pós-condições**: Registro de check-in associado ao hábito; streaks recalculados; dados persistidos.
-
-#### Fluxo Principal
-1. O usuário solicita o check-in indicando o identificador do hábito.
-2. O sistema recupera o hábito pelo identificador informado.
-3. O sistema obtém a data atual (formato ISO `AAAA-MM-DD`).
-4. O sistema verifica se já existe registro de check-in para o hábito na data informada.
-5. O sistema registra o novo check-in contendo timestamp exato da conclusão.
-6. O sistema aciona o calculador de streaks para atualizar a sequência atual e o recorde histórico.
-7. O sistema persiste as alterações no armazenamento durável.
-8. O sistema exibe confirmação com a nova contagem de dias da sequência (*streak* atualizado).
+#### Fluxo Principal (Caminho Feliz)
+1. O Usuário preenche o formulário de novo hábito informando: Título, Descrição, Categoria e Meta Semanal (1 a 7 dias).
+2. O Usuário aciona o comando "Adicionar Hábito".
+3. O Sistema valida os dados recebidos (RF08).
+4. O Sistema gera um identificador único (UUID/ID), define a data de criação e inicializa a lista de *check-ins* vazia.
+5. O Sistema persiste o registro no repositório de dados (`data/habits.json`).
+6. O Sistema retorna o hábito criado (HTTP 201) e atualiza a listagem e os indicadores na tela.
 
 #### Fluxos Alternativos
-- **A1: Check-in Retroativo (Data Customizada)**
-  - No passo 1, o usuário fornece explicitamente uma data passada válida. O sistema processa o check-in para aquela data específica e recalcula os streaks retroativos.
+- **FA01 — Descrição não informada:**
+  1. No passo 1, o Usuário deixa o campo de descrição em branco.
+  2. O Sistema aceita o cadastro atribuindo uma string vazia à descrição e prossegue para o passo 3.
 
 #### Fluxos de Exceção
-- **E1: Hábito Não Encontrado**
-  - No passo 2, se o ID não corresponder a nenhum hábito, o sistema informa `"Erro: Hábito com ID informado não foi encontrado."`.
-- **E2: Hábito Encontra-se Arquivado**
-  - No passo 2, se o hábito estiver arquivado, o sistema bloqueia a operação informando `"Erro: Não é possível registrar check-in em um hábito arquivado."`.
-- **E3: Check-in Duplicado na Mesma Data**
-  - No passo 4, se já houver registro para a data, o sistema impede a duplicação e informa `"Aviso: Este hábito já foi marcado como concluído para o dia [DATA]."`.
+- **FE01 — Título inválido ou ausente:**
+  1. No passo 3, o Sistema identifica que o título está vazio ou possui menos de 3 caracteres.
+  2. O Sistema rejeita a operação com status `400 Bad Request` e exibe a mensagem: *"O título do hábito é obrigatório e deve ter pelo menos 3 caracteres"*.
+  3. O caso de uso retorna ao passo 1.
+- **FE02 — Meta semanal fora do intervalo (1 a 7):**
+  1. No passo 3, o Sistema detecta que a meta semanal é menor que 1 ou maior que 7.
+  2. O Sistema retorna erro `400 Bad Request` informando que a meta semanal deve estar entre 1 e 7 dias.
 
 ---
 
-### UC03: Consultar Streaks e Métricas de Desempenho
-- **Ator Principal**: Usuário Regular.
-- **Objetivo**: Visualizar o progresso de consistência, dias consecutivos e taxas de conclusão.
-- **Pré-condições**: O sistema deve possuir acesso aos dados persistidos.
-- **Pós-condições**: Nenhuma alteração de estado no sistema (operação idempotente de leitura).
+### UC02 — Consultar e Filtrar Hábitos
+- **Ator Principal:** Usuário
+- **Requisitos Relacionados:** RF02, RF06
+- **Pré-condições:** Existir zero ou mais hábitos cadastrados no repositório.
+- **Pós-condições:** O usuário visualiza a lista atualizada de hábitos com seus respectivos *streaks*.
 
 #### Fluxo Principal
-1. O usuário solicita a exibição do painel de métricas.
-2. O sistema carrega todos os hábitos ativos e seus respectivos check-ins.
-3. Para cada hábito, o sistema executa o algoritmo de cálculo de streaks:
-   - Identifica dias consecutivos até o dia corrente ou anterior imediato.
-   - Determina se o streak de hoje está ativo ou aguardando conclusão.
-   - Avalia a maior sequência histórica contínua de dias registrados.
-4. O sistema calcula a taxa de consistência dos últimos 7 dias (`dias_concluídos / 7 * 100%`) e últimos 30 dias.
-5. O sistema renderiza a tabela consolidada com títulos, streaks, taxas e status do dia de hoje.
+1. O Usuário acessa a tela inicial do HabitFlow (ou requisita `GET /api/habits`).
+2. O Sistema recupera os hábitos armazenados.
+3. Para cada hábito, o Motor de Estatísticas calcula a ofensiva atual (*current streak*), o recorde (*best streak*) e se o hábito já foi cumprido na data de hoje.
+4. O Sistema apresenta a lista de hábitos ordenada pela data de criação.
 
 #### Fluxos Alternativos
-- **A1: Nenhum Hábito Cadastrado**
-  - No passo 2, se a base estiver vazia, o sistema apresenta orientação amigável sugerindo o cadastro do primeiro hábito através do comando de inclusão.
+- **FA01 — Filtrar por Categoria ou Busca Textual:**
+  1. O Usuário seleciona uma categoria específica (ex.: `Estudos`) ou digita um termo no campo de busca.
+  2. O Sistema filtra os registros correspondentes e atualiza a visualização exibindo apenas os itens que atendem ao critério.
+- **FA02 — Nenhum hábito cadastrado:**
+  1. No passo 2, o Sistema verifica que não há hábitos correspondentes.
+  2. O Sistema exibe um estado vazio amigável orientando o usuário a cadastrar seu primeiro hábito.
 
 ---
 
-### UC04: Arquivar Hábito
-- **Ator Principal**: Usuário Regular.
-- **Objetivo**: Retirar um hábito de circulação diária sem destruir seu histórico estatístico.
-- **Pré-condições**: Hábito existente com status ativo.
-- **Pós-condições**: Atributo `isArchived` marcado como `true`; hábito oculto na visualização regular.
+### UC03 — Editar ou Excluir Hábito
+- **Ator Principal:** Usuário
+- **Requisitos Relacionados:** RF03, RF04, RF08
+- **Pré-condições:** O hábito alvo deve existir no sistema.
+- **Pós-condições:** Os dados do hábito são atualizados ou o registro é definitivamente removido.
 
-#### Fluxo Principal
-1. O usuário solicita o arquivamento de um hábito informando o ID.
-2. O sistema localiza o registro e verifica seu estado.
-3. O sistema altera o campo `isArchived` para `true` e atualiza a data de modificação.
-4. O sistema persiste a alteração em disco.
-5. O sistema exibe mensagem confirmando que o hábito foi arquivado com sucesso.
+#### Fluxo Principal (Edição)
+1. O Usuário seleciona a opção de edição de um hábito existente.
+2. O Usuário altera um ou mais campos (título, descrição, categoria ou meta semanal) e confirma.
+3. O Sistema valida os novos dados, preserva o array de datas já concluídas (`completedDates`) e salva a alteração.
+4. O Sistema retorna status `200 OK` com o hábito atualizado.
+
+#### Fluxos Alternativos
+- **FA01 — Exclusão de Hábito:**
+  1. O Usuário aciona o botão "Excluir" em um hábito.
+  2. O Sistema solicita confirmação da exclusão.
+  3. O Usuário confirma a operação.
+  4. O Sistema remove o hábito da base de dados, recalcula as estatísticas globais e atualiza a interface.
 
 #### Fluxos de Exceção
-- **E1: Hábito Inexistente ou Já Arquivado**
-  - No passo 2, se o ID for inválido ou o hábito já estiver com status arquivado, o sistema emite notificação clara e não realiza alterações.
+- **FE01 — Hábito não encontrado:**
+  1. Caso o identificador (ID) informado não exista na base, o Sistema interrompe a operação e retorna `404 Not Found` com a mensagem *"Hábito não encontrado"*.
 
 ---
 
-### UC05: Desfazer Check-in (Check-out)
-- **Ator Principal**: Usuário Regular.
-- **Objetivo**: Cancelar um registro de conclusão feito por engano para a data informada.
-- **Pré-condições**: Existência prévia de um check-in registrado para a data alvo.
-- **Pós-condições**: Remoção do registro específico de check-in e recálculo imediato das métricas.
+### UC04 — Registrar Check-in Diário (Marcar/Desmarcar Conclusão)
+- **Ator Principal:** Usuário
+- **Requisitos Relacionados:** RF05, RF06, RF07
+- **Pré-condições:** O hábito deve estar cadastrado no sistema.
+- **Pós-condições:** A data do *check-in* é adicionada ou removida do histórico do hábito e os *streaks* são recalculados.
 
 #### Fluxo Principal
-1. O usuário solicita o cancelamento do check-in para o hábito especificado.
-2. O sistema busca os registros de check-in para a data (hoje por padrão).
-3. O sistema remove o registro correspondente da lista de check-ins.
-4. O sistema recalcula o streak atual e salva os dados atualizados.
-5. O sistema exibe feedback de cancelamento realizado.
+1. O Usuário clica no botão de *check-in* ("Concluir Hoje") de um hábito listado.
+2. O Sistema identifica a data alvo no formato ISO (`YYYY-MM-DD`).
+3. O Sistema verifica que a data ainda não consta na lista `completedDates` daquele hábito.
+4. O Sistema registra a data no histórico do hábito e persiste a alteração.
+5. O Sistema executa o cálculo atualizado de *current streak* e *best streak* (incluindo o **UC05**).
+6. O Sistema atualiza o visual do hábito como "Concluído Hoje" e incrementa os indicadores do Dashboard.
+
+#### Fluxos Alternativos
+- **FA01 — Desmarcar Check-in (Toggle Off):**
+  1. No passo 3, o Sistema verifica que a data informada já está marcada como concluída.
+  2. O Sistema remove a data da lista `completedDates` (permitindo corrigir cliques acidentais).
+  3. O Sistema recalcula a ofensiva e atualiza a interface desmarcando o hábito.
 
 #### Fluxos de Exceção
-- **E1: Inexistência de Check-in para a Data**
-  - No passo 2, se não houver conclusão registrada para o dia, o sistema notifica: `"Aviso: Nenhum check-in encontrado para ser desfeito nesta data."`.
+- **FE01 — Formato de data inválido:**
+  1. Se a requisição à API fornecer uma string de data fora do padrão `YYYY-MM-DD`, o Sistema rejeita a operação com status `400 Bad Request`.
+
+---
+
+### UC05 — Visualizar Estatísticas e Streaks
+- **Ator Principal:** Usuário / Motor de Estatísticas
+- **Requisitos Relacionados:** RF06, RF07
+- **Pré-condições:** Nenhuma.
+- **Pós-condições:** As métricas consolidadas de desempenho são apresentadas no painel superior.
+
+#### Fluxo Principal
+1. O Usuário visualiza o painel de estatísticas (ou requisita `GET /api/habits/stats`).
+2. O Sistema contabiliza o total de hábitos cadastrados e quantos possuem *check-in* na data atual.
+3. O Sistema calcula a taxa de conclusão do dia em percentual (`concluidosHoje / totalHabitos * 100`).
+4. O Sistema identifica a maior sequência ativa (*current streak*) e o recorde histórico entre todos os hábitos.
+5. O Sistema apresenta os cartões de métricas atualizados para o usuário.
