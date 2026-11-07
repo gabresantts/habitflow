@@ -1,257 +1,203 @@
-# 🌊 HabitFlow - Gerenciador Inteligente de Hábitos & SDLC no GitHub
+# HabitFlow — Gerenciador de Hábitos e Consistência Diária
 
-[![Release SemVer](https://img.shields.io/badge/version-v0.1.0-blue.svg?style=for-the-badge&logo=git)](https://semver.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
-[![Build & Tests](https://img.shields.io/badge/tests-100%25%20passing-brightgreen.svg?style=for-the-badge&logo=node.js)](tests/)
-[![Node Version](https://img.shields.io/badge/node-%3E%3D18.0.0-green.svg?style=for-the-badge&logo=node.js)](package.json)
-[![Git Flow](https://img.shields.io/badge/workflow-Git%20Flow-orange.svg?style=for-the-badge&logo=github)](docs/backlog-issues.md)
-[![Conventional Commits](https://img.shields.io/badge/commits-Conventional-purple.svg?style=for-the-badge)](https://www.conventionalcommits.org)
+[![Versão](https://img.shields.io/github/v/tag/gabresantts/habitflow?label=vers%C3%A3o&sort=semver)](https://github.com/gabresantts/habitflow/releases)
+[![Licença](https://img.shields.io/github/license/gabresantts/habitflow?label=licen%C3%A7a)](./LICENSE)
+[![CI](https://github.com/gabresantts/habitflow/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/gabresantts/habitflow/actions/workflows/ci.yml)
+[![Pages](https://github.com/gabresantts/habitflow/actions/workflows/pages.yml/badge.svg?branch=main)](https://gabresantts.github.io/habitflow/)
+![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-339933.svg)
+![Git Flow](https://img.shields.io/badge/workflow-Git%20Flow%20%2B%20SemVer-orange.svg)
 
-> **HabitFlow** é uma solução de engenharia para gestão de hábitos diários, cálculo contínuo de sequências (*streaks*), métricas de adesão semanal e produtividade pessoal. Desenvolvido com foco rigoroso em boas práticas de Engenharia de Software, arquitetura em camadas (Clean Architecture), persistência atômica e rastreabilidade total no GitHub (Git Flow, Conventional Commits e GitHub Issues).
+O **HabitFlow** é uma aplicação web full-stack (API RESTful + Dashboard Interativo) projetada para auxiliar estudantes e profissionais na construção e manutenção de hábitos diários. Ele resolve o problema da falta de visibilidade sobre a consistência pessoal, permitindo cadastrar hábitos por categoria, registrar *check-ins* diários com apenas **1 clique** e acompanhar automaticamente a ofensiva atual (*current streak*), o recorde histórico (*best streak*) e a taxa percentual de metas cumpridas no dia.
 
----
+Este projeto foi desenvolvido aplicando rigorosamente o **Ciclo de Vida de Desenvolvimento de Software (SDLC)**: desde o Termo de Abertura (*Project Charter*), Engenharia de Requisitos (RF/RNF), Casos de Uso e *User Stories* em BDD/Gherkin até o desdobramento em **15 Issues rastreáveis**, **Git Flow**, **Commits Atômicos (Conventional Commits)** e **Versionamento Semântico (SemVer)**.
 
-## 📑 Sumário
+## Demonstração Online
 
-- [Visão Geral e Problema Resolvido](#-visão-geral-e-problema-resolvido)
-- [Funcionalidades: Implementadas vs. Planejadas](#-funcionalidades-implementadas-vs-planejadas)
-- [Arquitetura e Estrutura do Repositório](#-arquitetura-e-estrutura-do-repositório)
-- [Documentação de Engenharia (Pasta docs/)](#-documentação-de-engenharia-pasta-docs)
-- [Backlog no GitHub: As 15 Issues](#-backlog-no-github-as-15-issues)
-- [Fluxo de Trabalho de Versionamento (Git Flow)](#-fluxo-de-trabalho-de-versionamento-git-flow)
-- [Guia de Instalação e Execução Local](#-guia-de-instalação-e-execução-local)
-- [Bateria de Testes Automatizados](#-bateria-de-testes-automatizados)
-- [Licença e Autoria](#-licença-e-autoria)
+**https://gabresantts.github.io/habitflow/**
+
+O GitHub Pages só serve arquivos estáticos, então a versão publicada roda em **modo demonstração**: o mesmo `HabitService`, o mesmo roteador da API e o mesmo cálculo de *streaks* do backend são carregados no navegador, e um `fetch` substituto encaminha as chamadas `/api/*` para eles. Os dados ficam no `localStorage` de quem acessa, sem servidor. Para usar a API Node com persistência em `data/habits.json`, siga a execução local abaixo.
 
 ---
 
-## 🎯 Visão Geral e Problema Resolvido
+## Documentação de Engenharia (`docs/`)
 
-A inconsistência na manutenção de hábitos saudáveis e rotinas de estudo decorre frequentemente da ausência de feedback imediato e da falta de métricas tangíveis de progresso. O **HabitFlow** resolve este problema fornecendo:
+Todos os artefatos formais de especificação e modelagem encontram-se na pasta `docs/`:
 
-1. **Rastreamento Intuitivo**: Registro diário ágil com status claro (Pendente vs. Concluído).
-2. **Psicologia de Streaks**: Algoritmo matemático para cálculo de dias consecutivos ininterruptos (*current streak*) e recorde histórico (*longest streak*).
-3. **Métricas de Adesão**: Cálculo de consistência percentual nos últimos 7 e 30 dias.
-4. **Persistência Durável**: Escrita atômica em disco (*atomic write*) eliminando qualquer risco de corrupção de dados.
-
----
-
-## 🚀 Funcionalidades: Implementadas vs. Planejadas
-
-| Status | Funcionalidade | Descrição | Requisito / Issue |
-| :---: | :--- | :--- | :--- |
-| ✅ | **Cadastro de Hábitos** | Criação com título, categoria temática e meta semanal de dias (1-7). | `[RF01]` / #07, #11 |
-| ✅ | **Acompanhamento de Streaks** | Cálculo de sequências ativas e recordes históricos em tempo real. | `[RF07]` / #09, #10 |
-| ✅ | **Check-in Diário** | Registro de cumprimento diário com prevenção contra duplicidade. | `[RF05]` / #07, #12 |
-| ✅ | **Desfazer Check-in (Undo)** | Reversão de marcações acidentais com recálculo de sequências. | `[RF06]` / #12 |
-| ✅ | **Arquivamento (Soft Delete)** | Ocultar hábitos concluídos ou suspensos preservando o histórico. | `[RF04]` / #11 |
-| ✅ | **Filtragem por Categorias** | Segmentação por Saúde, Estudos, Produtividade, etc. | `[RF08]` / #11 |
-| ✅ | **Relatório Analítico & Métricas** | Relatório executivo com taxas de consistência e hábitos recordistas. | `[RF09]` / #14 |
-| ✅ | **Interface CLI & Modo Demonstração** | Execução rápida no terminal e gerador de massa de testes de 7 dias. | `[RNF03]` / #13 |
-| ✅ | **Persistência Atômica Durável** | Gravação segura via arquivo temporário + renomeação síncrona. | `[RNF02]` / #08 |
-| ⏳ | **Autenticação Multi-usuário (OAuth2)** | Login via Google/GitHub com segregação de dados por usuário. | *Planejado (v0.2.0)* |
-| ⏳ | **Interface Web Responsiva** | Frontend moderno em React / Tailwind para visualização em dashboards. | *Planejado (v0.3.0)* |
-| ⏳ | **Notificações Push / Lembretes** | Envio de avisos para hábitos pendentes no fim do dia. | *Planejado (v1.0.0)* |
+| Documento | Descrição | Link Direto |
+| :--- | :--- | :--- |
+| **Project Charter** | Justificativa, visão do produto, objetivos SMART, escopo (In/Out) e Stakeholders. | [`docs/project-charter.md`](./docs/project-charter.md) |
+| **Requisitos (RF e RNF)** | Lista numerada e rastreável de 8 Requisitos Funcionais e 6 Requisitos Não Funcionais + Matriz de Rastreabilidade. | [`docs/requisitos.md`](./docs/requisitos.md) |
+| **Casos de Uso** | Especificação de atores, diagrama Mermaid e fluxos principais, alternativos e de exceção (`UC01` a `UC05`). | [`docs/casos-de-uso.md`](./docs/casos-de-uso.md) |
+| **User Stories (BDD)** | 5 Histórias de Usuário no formato canônico com Critérios de Aceite explícitos em Gherkin (*Dado/Quando/Então*). | [`docs/user-stories.md`](./docs/user-stories.md) |
+| **Arquitetura e Diagramas** | Diagrama C4 de Componentes, Diagrama de Classes, Máquina de Estados de *Streaks* e Especificação da API REST. | [`docs/arquitetura-e-diagramas.md`](./docs/arquitetura-e-diagramas.md) |
 
 ---
 
-## 📦 Arquitetura e Estrutura do Repositório
+## Sumário de Funcionalidades: Implementadas vs. Planejadas
 
-O projeto segue estritamente a estrutura solicitada, aplicando separação de preocupações (Clean Architecture):
+| Funcionalidade | Requisito | Status | Versão |
+| :--- | :---: | :---: | :---: |
+| Cadastro de hábitos com validação de título, categoria e meta semanal | `RF01`, `RF08` | Implementado | `v0.2.0` |
+| Listagem e filtragem dinâmica por categoria, status do dia e busca textual | `RF02` | Implementado | `v0.2.0` |
+| Edição de hábitos existentes preservando histórico e exclusão permanente | `RF03`, `RF04` | Implementado | `v0.2.0` |
+| Registro de *check-in* diário (*toggle* concluído/pendente por data ISO) | `RF05` | Implementado | `v0.2.0` |
+| Cálculo automático de ofensiva atual (*current streak*) e recorde (*best streak*) | `RF06`, `RF07` | Implementado | `v0.2.0` |
+| Dashboard web responsivo com cartões de estatísticas e barra de progresso | `RF07`, `RNF03` | Implementado | `v1.0.0` |
+| Suíte de testes automatizados (unitários e integração HTTP) e CI no GitHub Actions | `RNF05` | Implementado | `v1.0.0` |
+| Modo demonstração no GitHub Pages com dados no `localStorage` do navegador | `RNF03`, `RNF06` | Implementado | `v1.1.0` |
+| Autenticação multiusuário com JWT / OAuth2 | Backlog Futuro | Planejado | `v2.0.0` |
+| Notificações push / lembretes por e-mail e WhatsApp | Backlog Futuro | Planejado | `v2.1.0` |
+| Exportação de relatórios mensais em PDF/CSV | Backlog Futuro | Planejado | `v2.2.0` |
+
+---
+
+## Estrutura do Repositório
 
 ```text
 habitflow/
-├── .github/
-│   └── workflows/
-│       └── ci.yml                       # Pipeline de Integração Contínua (CI)
-├── docs/                                # Documentação de Planejamento e Engenharia
-│   ├── project-charter.md               # Termo de Abertura do Projeto (SMART, Escopo)
-│   ├── requisitos.md                    # Requisitos Funcionais (RF) e Não Funcionais (RNF)
-│   ├── casos-de-uso.md                  # Especificação e Diagrama de Casos de Uso
-│   ├── user-stories.md                  # Histórias de Usuário e Critérios BDD/Gherkin
-│   ├── arquitetura.md                   # Diagramas C4 Model, DER, Classes e Estados
-│   └── backlog-issues.md                # Especificação das 15 Issues do GitHub
+├── docs/
+│   ├── project-charter.md           # Termo de Abertura do Projeto (SMART, Escopo, Stakeholders)
+│   ├── requisitos.md                # Requisitos Funcionais (RF01-RF08) e Não Funcionais (RNF01-RNF06)
+│   ├── casos-de-uso.md              # Especificação de Casos de Uso (UC01-UC05)
+│   ├── user-stories.md              # Histórias de Usuário (US01-US05) com Critérios BDD/Gherkin
+│   └── arquitetura-e-diagramas.md   # Diagramas C4, Classes, Estados e Endpoints REST
+├── src/
+│   ├── public/                      # Interface Web Responsiva (HTML5, CSS3, JS Client)
+│   │   ├── index.html
+│   │   ├── styles.css
+│   │   └── app.client.js
+│   ├── api/
+│   │   └── router.js                # Rotas /api/* como função pura (usada pelo servidor e pelo modo demo)
+│   ├── services/
+│   │   └── habitService.js          # Regras de negócio e validações (recebe o adapter de armazenamento)
+│   ├── storage/
+│   │   ├── jsonFileStorage.js       # Adapter de armazenamento em data/habits.json (Node)
+│   │   └── localStorageStorage.js   # Adapter de armazenamento no localStorage (navegador)
+│   ├── demo/
+│   │   ├── boot.js                  # Carrega os módulos no navegador e substitui o fetch de /api/*
+│   │   └── demoFetch.js             # Encaminha chamadas /api/* para o roteador
+│   ├── utils/
+│   │   └── streakCalculator.js      # Motor matemático de cálculo de streaks e datas
+│   ├── app.js                       # Servidor HTTP: CORS, leitura do corpo e arquivos estáticos
+│   └── server.js                    # Ponto de entrada da aplicação
 ├── scripts/
-│   ├── create-issues.ps1                # Automação de criação das 15 issues via GitHub CLI (PowerShell)
-│   ├── create-issues.sh                 # Automação de criação das 15 issues via GitHub CLI (Bash)
-│   ├── setup-gitflow.ps1                # Inicialização e automação de Git Flow (PowerShell)
-│   └── setup-gitflow.sh                 # Inicialização e automação de Git Flow (Bash)
-├── src/                                 # Código-fonte da aplicação
-│   ├── domain/                          # Camada de Domínio Puro
-│   │   ├── entities/
-│   │   │   ├── Habit.js                 # Entidade Habit
-│   │   │   └── CheckIn.js               # Entidade CheckIn
-│   │   └── services/
-│   │       └── StreakCalculator.js      # Lógica matemática de sequências consecutivas
-│   ├── infrastructure/                  # Camada de Infraestrutura e Persistência
-│   │   └── storage/
-│   │       └── JSONHabitRepository.js   # Repositório JSON durável com escrita atômica
-│   ├── application/                     # Camada de Aplicação / Casos de Uso
-│   │   └── services/
-│   │       ├── HabitService.js          # Casos de uso de hábitos e check-ins
-│   │       └── MetricsService.js        # Relatórios estatísticos e consolidações
-│   ├── presentation/                    # Camada de Apresentação
-│   │   └── cli.js                       # CLI rica formatada com tabelas e suporte a demo
-│   └── index.js                         # Ponto de entrada executável (CLI runner)
-├── tests/                               # Suíte de Testes Automatizados
-│   └── unit/
-│       ├── StreakCalculator.test.js     # Testes unitários do cálculo de sequências
-│       └── HabitService.test.js         # Testes unitários das regras de negócio e serviços
-├── .gitignore                           # Exclusão de dependências, dados locais e temporários
-├── package.json                         # Configurações do projeto e scripts npm
-└── README.md                            # Guia principal do projeto
+│   └── build-pages.sh               # Monta o site do modo demonstração em _site/
+├── tests/
+│   ├── habit.test.js                # Testes automatizados (Unitários + API REST)
+│   └── demo.test.js                 # Testes do modo demonstração e do adapter do navegador
+├── data/
+│   └── .gitkeep                     # Diretório de persistência local (habits.json)
+├── .github/workflows/ci.yml         # Pipeline de CI (npm test em Node 20 e 22)
+├── .github/workflows/pages.yml      # Testa, monta e publica o modo demonstração no GitHub Pages
+├── .gitignore                       # Arquivos e pastas ignorados pelo Git
+├── LICENSE                          # Licença MIT
+├── package.json                     # Manifesto do projeto e scripts npm
+└── README.md                        # Documentação principal e guia do projeto
 ```
 
 ---
 
-## 📝 Documentação de Engenharia (Pasta docs/)
+## Configuração de Ambiente, Instalação e Execução Local
 
-Acesse os documentos de planejamento e engenharia nos links diretos abaixo:
+### Pré-requisitos
+- **Node.js** versão `18.0.0` ou superior instalado ([https://nodejs.org/](https://nodejs.org/)).
+- **Git** instalado.
 
-1. 📄 [**Project Charter (Termo de Abertura)**](docs/project-charter.md): Justificativa do produto, metas SMART, delimitação de escopo in/out e análise de stakeholders.
-2. 📋 [**Especificação de Requisitos (RF e RNF)**](docs/requisitos.md): 10 Requisitos Funcionais (`RF01-RF10`), 8 Requisitos Não Funcionais (`RNF01-RNF08`) e Matriz de Rastreabilidade.
-3. 🎯 [**Casos de Uso (Use Cases)**](docs/casos-de-uso.md): Mapeamento de atores, fluxos principais, alternativos e de exceção com diagrama Mermaid.
-4. 📖 [**Histórias de Usuário (User Stories)**](docs/user-stories.md): 8 User Stories no padrão canônico com critérios de aceitação completos em formato BDD/Gherkin.
-5. 🏛️ [**Especificação Arquitetural e Modelagem**](docs/arquitetura.md): Diagramas C4 Model (Contexto e Contêiner), DER, Diagrama de Classes e Máquina de Estados.
-6. 🗂️ [**Backlog de 15 Issues Detalhadas**](docs/backlog-issues.md): Mapeamento formal de cada issue com descrição pronta para o GitHub.
+> **Portabilidade Total (`RNF06`):** O projeto usa apenas módulos nativos do Node.js (`node:http`, `node:fs`, `node:crypto`, `node:test`). Não há dependências npm nem banco de dados externo, então não é preciso rodar `npm install`.
 
----
+### Passo a Passo
 
-## ⚙️ Backlog no GitHub: As 15 Issues
+1. **Clone o repositório:**
+   ```bash
+   git clone https://github.com/gabresantts/habitflow.git
+   cd habitflow
+   ```
 
-O backlog foi planejado de forma a refletir integralmente o ciclo de desenvolvimento (SDLC):
+2. **Execute a suíte de testes automatizados:**
+   ```bash
+   npm test
+   ```
 
-| # | Tipo | Título da Issue | Labels | Critérios / Rastreabilidade |
-| :-: | :--- | :--- | :--- | :--- |
-| **#01** | `docs` | [DOC] Elaborar Project Charter e Termo de Abertura do Projeto | `documentation` | Metas SMART, Escopo In/Out |
-| **#02** | `docs` | [DOC] Especificar Requisitos Funcionais (RF) e Não Funcionais (RNF) | `documentation` | `[RF01-RF10]`, `[RNF01-RNF08]` |
-| **#03** | `docs` | [DOC] Modelar Casos de Uso com Fluxos Principais e de Exceção | `documentation` | `UC01-UC06`, Diagrama Mermaid |
-| **#04** | `docs` | [DOC] Detalhar Histórias de Usuário com Critérios de Aceite BDD/Gherkin | `documentation` | `US01-US08`, BDD Given/When/Then |
-| **#05** | `docs` | [DOC] Criar Diagramas Complementares de Engenharia (C4, DER, Classes) | `documentation`, `enhancement` | C4 Model, DER, Classes, Estados |
-| **#06** | `chore` | [CHORE] Configurar Estrutura de Pastas do Repositório, .gitignore e Package.json | `chore`, `setup` | Layout padrão do projeto |
-| **#07** | `feat` | [FEAT] Implementar Entidades de Domínio Habit e CheckIn com Validações | `feature`, `domain` | `[RF01]`, `[RF05]`, `[RNF07]` |
-| **#08** | `feat` | [FEAT] Implementar Repositório com Persistência Atômica Durável em JSON | `feature`, `infrastructure` | `[RNF02]`, Escrita Atômica |
-| **#09** | `feat` | [FEAT] Implementar Algoritmo de Cálculo de Streaks e Consistência Temporal | `feature`, `domain` | `[RF07]`, `US03`, Sequências contíguas |
-| **#10** | `test` | [TEST] Desenvolver Suíte de Testes Unitários para StreakCalculator e HabitService | `test` | `[RNF04]`, 100% testes passing |
-| **#11** | `feat` | [FEAT] Implementar Serviços de Aplicação (HabitService - CRUD e Filtros) | `feature`, `application` | `[RF01-RF04]`, `[RF08]` |
-| **#12** | `feat` | [FEAT] Implementar Registro de Check-in Diário e Operação de Desfazer Check-in | `feature`, `application` | `[RF05]`, `[RF06]`, Anti-duplicação |
-| **#13** | `feat` | [FEAT] Desenvolver Interface de Linha de Comando (CLI) e Demonstração | `feature`, `ui` | `[RNF03]`, Comandos interativos |
-| **#14** | `feat` | [FEAT] Desenvolver Geração de Relatórios Estatísticos e Métricas Semanais | `feature`, `analytics` | `[RF09]`, Taxa semanal e mensal |
-| **#15** | `release` | [RELEASE] Consolidar README.md, Versionamento SemVer v0.1.0 e Documentação Final | `documentation`, `release` | Tag SemVer `v0.1.0` |
+3. **Inicie o servidor da aplicação:**
+   ```bash
+   npm start
+   ```
 
-> 💡 **Automação disponível**: Para criar todas as 15 issues instantaneamente no seu repositório via GitHub CLI, execute `./scripts/create-issues.ps1` (Windows) ou `./scripts/create-issues.sh` (Linux/Mac).
+4. **Acesse no navegador:**
+   - **Dashboard Web Interativo:** `http://localhost:3000`
+   - **Healthcheck da API:** `http://localhost:3000/api/health`
+   - **Estatísticas JSON:** `http://localhost:3000/api/habits/stats`
 
 ---
 
-## 🔀 Fluxo de Trabalho de Versionamento (Git Flow)
+## Fluxo de Branches Adotado (Git Flow) e Versionamento Semântico
 
-O projeto adota rigorosamente o modelo **Git Flow** aliado a **Commits Atômicos** baseados na especificação [Conventional Commits](https://www.conventionalcommits.org/):
+O desenvolvimento segue o modelo **Git Flow** combinado com **Conventional Commits** e **SemVer**. Nenhum commit é feito direto em `main` ou `develop`: toda mudança entra por **Pull Request** que referencia a issue (`Closes #N`).
+
+1. Cada issue ganha uma branch `feature/issue-NN-descricao` criada a partir de `develop`.
+2. A branch volta para `develop` por Pull Request, depois do CI verde.
+3. Num marco estável, uma branch `release/vX.Y.Z` sai de `develop`, atualiza a versão no `package.json` e é integrada em `main` por Pull Request.
+4. O merge em `main` recebe uma **tag anotada** SemVer e uma Release no GitHub; a branch de release volta para `develop`.
 
 ```mermaid
 gitGraph
-   commit id: "chore: init main"
-   branch develop
-   checkout develop
-   commit id: "docs: charter & requirements (#1, #2)"
-   branch feature/streaks
-   checkout feature/streaks
-   commit id: "feat(domain): StreakCalculator (#9)"
-   commit id: "test(domain): unit tests (#10)"
-   checkout develop
-   merge feature/streaks id: "merge: feature/streaks into develop"
-   branch feature/cli
-   checkout feature/cli
-   commit id: "feat(cli): command interface & demo (#13)"
-   checkout develop
-   merge feature/cli id: "merge: feature/cli into develop"
-   checkout main
-   merge develop id: "release: v0.1.0 (Closes #15)"
-   commit id: "tag: v0.1.0"
+    commit id: "initial"
+    branch develop
+    checkout develop
+    branch feature/issue-01
+    commit id: "chore(setup)"
+    checkout develop
+    merge feature/issue-01
+    branch feature/issue-02
+    commit id: "docs(...)"
+    checkout develop
+    merge feature/issue-02
+    branch release/v0.1.0
+    commit id: "chore(release): v0.1.0"
+    checkout main
+    merge release/v0.1.0 tag: "v0.1.0"
+    checkout develop
+    merge release/v0.1.0
+    branch feature/issue-07
+    commit id: "feat(...)"
+    checkout develop
+    merge feature/issue-07
+    branch release/v0.2.0
+    commit id: "chore(release): v0.2.0"
+    checkout main
+    merge release/v0.2.0 tag: "v0.2.0"
 ```
 
-### Regras do Fluxo
-1. **`main`**: Branch de produção contendo apenas versões prontas e estáveis marcadas com tags SemVer (ex.: `v0.1.0`). Commits diretos são expressamente proibidos.
-2. **`develop`**: Branch de integração contínua contendo as últimas features validadas.
-3. **`feature/issue-XX-...`**: Branches temáticas temporárias abertas para resolver cada issue específica.
-4. **Commits Atômicos e Rastreáveis**: Mensagens no padrão `tipo(escopo): descrição concisa (#issue)` (ex.: `feat(streaks): calcular sequências consecutivas (#9)`).
-5. **Fechamento de Issues**: Pull Requests ou merges referenciam o fechamento formal (ex.: `Closes #9`).
+### Tabela de Branches e Releases
 
----
+| Branch / Tag | Tipo | Objetivo e Rastreabilidade |
+| :--- | :---: | :--- |
+| `main` | Produção | Contém apenas código estável, integrado por Pull Request de uma branch `release/*` e marcado com tag SemVer. |
+| `develop` | Integração | Branch base de desenvolvimento onde todas as branches `feature/issue-*` são integradas por Pull Request. |
+| `release/vX.Y.Z` | Release | Atualiza a versão no `package.json` e leva `develop` para `main`. |
+| `feature/issue-01-setup-projeto` | Feature/Chore | Configuração inicial da estrutura de pastas, `.gitignore` e `package.json` (`Closes #1`). |
+| `feature/issue-02-project-charter` | Docs | Elaboração do Termo de Abertura do Projeto (`Closes #2`). |
+| `feature/issue-03-requisitos` | Docs | Especificação dos Requisitos Funcionais e Não Funcionais (`Closes #3`). |
+| `feature/issue-04-casos-de-uso` | Docs | Modelagem dos Casos de Uso `UC01` a `UC05` (`Closes #4`). |
+| `feature/issue-05-user-stories` | Docs | Escrita das Histórias de Usuário em BDD/Gherkin (`Closes #5`). |
+| `feature/issue-06-arquitetura-diagramas` | Docs | Diagramas C4, Classes e Estados em Mermaid (`Closes #6`). |
+| `feature/issue-07-api-cadastro-habito` | Feature | Implementação do cadastro e validação de hábitos `[RF01, RF08]` (`Closes #7`). |
+| `feature/issue-08-api-listagem-filtro` | Feature | Listagem de hábitos com filtro por categoria, status e busca `[RF02]` (`Closes #8`). |
+| `feature/issue-09-api-edicao-exclusao` | Feature | Endpoints e regras de edição e exclusão de hábitos `[RF03, RF04]` (`Closes #9`). |
+| `feature/issue-10-api-checkin-diario` | Feature | Registro e alternância (*toggle*) de *check-in* por data `[RF05]` (`Closes #10`). |
+| `feature/issue-11-calculo-streaks` e `feature/issue-11-estatisticas-dashboard` | Feature | Algoritmo de cálculo de ofensivas (*streaks*) e endpoint de estatísticas `[RF06, RF07]` (`Refs #11` / `Closes #11`). |
+| `feature/issue-12-persistencia-json` | Feature | Camada de persistência automática em arquivo JSON e *seed* inicial `[RNF02]` (`Closes #12`). |
+| `feature/issue-13-interface-web-dashboard` | Feature | Construção do Frontend responsivo consumindo a API `[RNF03]` (`Closes #13`). |
+| `feature/issue-14-testes-integracao-ci` | Test | Testes de integração HTTP e pipeline de CI no GitHub Actions `[RNF05]` (`Closes #14`). |
+| `feature/issue-15-readme-documentacao-final` | Docs | Consolidação do `README.md`, badges, guia de execução e revisão final (`Closes #15`). |
 
-## 💻 Guia de Instalação e Execução Local
-
-### Pré-requisitos
-- **Node.js** na versão 18 LTS ou superior (`node -v`).
-- **Git** instalado (`git -v`).
-
-### 1. Clonar o Repositório
-```bash
-git clone https://github.com/SEU-USUARIO/habitflow.git
-cd habitflow
-```
-
-### 2. Executar a Aplicação (Sem dependências externas pesadas)
-Como a aplicação utiliza o runtime moderno Node.js ESM nativo e biblioteca padrão, não há necessidade obrigatória de `npm install` para iniciar:
-
-```bash
-# Executar a demonstração guiada (popula hábitos de exemplo e histórico de 7 dias)
-npm run demo
-
-# Listar os hábitos ativos e o painel de streaks
-npm start
-```
-
-### 3. Comandos Principais da CLI
-
-```bash
-# Cadastrar um novo hábito
-npm run cli -- add "Ler 20 páginas" Estudos 7
-
-# Listar hábitos filtrando por categoria
-npm run cli -- list Saúde
-
-# Registrar check-in no dia de hoje
-npm run cli -- check <ID_DO_HABITO>
-
-# Desfazer o check-in de hoje (uncheck)
-npm run cli -- uncheck <ID_DO_HABITO>
-
-# Exibir relatório executivo de métricas e taxa de adesão
-npm run cli -- stats
-
-# Arquivar um hábito (soft delete)
-npm run cli -- archive <ID_DO_HABITO>
-```
-
----
-
-## 🧪 Bateria de Testes Automatizados
-
-O HabitFlow conta com suíte abrangente de testes unitários executados com o test runner nativo do Node.js (`node:test`), garantindo execução ultrarrápida e confiabilidade total das regras de negócio (`RNF04`):
-
-```bash
-# Executar todos os testes unitários
-npm test
-
-# Executar testes com relatório detalhado de cobertura de código
-npm run test:coverage
-```
-
-### Cenários Cobertos nos Testes
-- ✅ Cálculo de *current streak* com dia de hoje concluído vs. pendente.
-- ✅ Tolerância ao dia corrente sem quebrar a sequência anterior válida de ontem.
-- ✅ Detecção de quebra de sequência com preservação intacta do *longest streak* histórico.
-- ✅ Deduplicação e ordenação cronológica de timestamps UTC.
-- ✅ Cálculo exato de taxas de consistência percentual em janelas temporais de 7 dias.
-- ✅ Validações de domínio (títulos vazios, frequências inválidas).
-- ✅ Prevenção contra check-in repetido no mesmo dia para o mesmo hábito.
-- ✅ Operação de desfazer check-in e recálculo imediato.
-- ✅ Isolamento de hábitos arquivados (*soft delete*).
-
----
-
-## 📄 Licença e Autoria
-
-Distribuído sob a licença **MIT**. Consulte o arquivo `LICENSE` para mais detalhes.
-
-Desenvolvido para a atividade prática de **Especificação, Gestão com Issues e SDLC no GitHub**.
+### Histórico de Releases (SemVer)
+- **`v0.1.0`** — *Milestone 1: Especificação e Documentação de Engenharia Completa* (Issues `#1` a `#6`).
+- **`v0.2.0`** — *Milestone 2: Core Backend API REST, Persistência e Cálculo de Streaks* (Issues `#7` a `#12`).
+- **`v1.0.0`** — *Milestone 3: Release Final MVP com Dashboard Web e Testes Automatizados* (Issues `#13` a `#15`).
+- **`v1.0.1`** — *Patch de documentação: remoção de emojis do README* (Issue `#38`).
+- **`v1.0.2`** — *Patch de documentação: correção da referência de issue da v1.0.1* (Issue `#38`).
+- **`v1.1.0`** — *Modo demonstração no GitHub Pages: adapter de armazenamento, roteador da API extraído e deploy automático* (Issues `#45` e `#46`).
+- **`v1.1.1`** — *Patch de documentação: arquitetura e diagramas atualizados* (Issue `#51`).
+- **`v1.1.2`** — *Patch de documentação: remoção de emojis dos documentos de `docs/`* (Issue `#55`).
+- **`v1.2.0`** — *Redesign da interface: tema escuro sóbrio, ícones SVG, check-in acessível e layout responsivo* (Issue `#59`).
