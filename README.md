@@ -7,9 +7,11 @@
 ![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-339933.svg)
 ![Git Flow](https://img.shields.io/badge/workflow-Git%20Flow%20%2B%20SemVer-orange.svg)
 
-O **HabitFlow** é uma aplicação web full-stack (API RESTful + Dashboard Interativo) projetada para auxiliar estudantes e profissionais na construção e manutenção de hábitos diários. Ele resolve o problema da falta de visibilidade sobre a consistência pessoal, permitindo cadastrar hábitos por categoria, registrar *check-ins* diários com apenas **1 clique** e acompanhar automaticamente a ofensiva atual (*current streak*), o recorde histórico (*best streak*) e a taxa percentual de metas cumpridas no dia.
+## Resumo da Solução e Stack Tecnológica:
 
-Este projeto foi desenvolvido aplicando rigorosamente o **Ciclo de Vida de Desenvolvimento de Software (SDLC)**: desde o Termo de Abertura (*Project Charter*), Engenharia de Requisitos (RF/RNF), Casos de Uso e *User Stories* em BDD/Gherkin até o desdobramento em **15 Issues rastreáveis**, **Git Flow**, **Commits Atômicos (Conventional Commits)** e **Versionamento Semântico (SemVer)**.
+O **HabitFlow** é uma aplicação web full-stack (API RESTful + Dashboard Web Interativo) projetada para auxiliar estudantes e profissionais na construção e manutenção de hábitos diários. O software soluciona a falta de visibilidade comportamental ao oferecer cadastro estruturado de metas, registro de check-in com apenas um clique, cálculo matemático rigoroso de sequências ativas (current streak e recorde histórico) e consolidação diária da taxa de conclusão. A aplicação possui arquitetura desacoplada com costura de execução (execution seam): no ambiente de servidor opera via API HTTP com persistência atômica em arquivo JSON, enquanto no GitHub Pages opera em modo demonstração client-side via interceptor de rotas no localStorage do navegador, permitindo deploy estático sem custo de servidor e compatibilidade com Vercel.
+
+O desenvolvimento aplicou integralmente o **Ciclo de Vida de Desenvolvimento de Software (SDLC)**: Termo de Abertura (Project Charter com metas SMART e delimitação de escopo), Engenharia de Requisitos (8 RFs e 6 RNFs com Matriz de Rastreabilidade), Casos de Uso (UC01 a UC05 com diagramas Mermaid), Histórias de Usuário canônicas com critérios de aceitação em BDD/Gherkin (Dado/Quando/Então), diagramas complementares (C4 Model, Diagrama de Classes e Máquina de Estados), backlog desdobrado em 15 GitHub Issues, fluxo de trabalho Git Flow (branches temáticas e merges rastreáveis), Conventional Commits e controle de versão SemVer com suíte de 41 testes automatizados (100% aprovados).
 
 ## Demonstração Online
 
