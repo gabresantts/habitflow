@@ -1,0 +1,31 @@
+{
+  "name": "habitflow",
+  "version": "0.1.0",
+  "description": "Sistema de Gestão de Hábitos e Produtividade Pessoal com SDLC profissional no GitHub",
+  "main": "src/index.js",
+  "type": "module",
+  "bin": {
+    "habitflow": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js list",
+    "cli": "node src/index.js",
+    "demo": "node src/index.js demo",
+    "test": "node --test tests/unit/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage tests/unit/*.test.js"
+  },
+  "keywords": [
+    "habit-tracker",
+    "sdlc",
+    "clean-architecture",
+    "git-flow",
+    "github-issues",
+    "streaks",
+    "senac"
+  ],
+  "author": "Gabriel",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
