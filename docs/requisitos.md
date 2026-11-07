@@ -1,58 +1,47 @@
-# HabitFlow - Especificação de Requisitos (RF e RNF)
+# Especificação de Requisitos do Sistema (RF e RNF)
 
-Este documento estabelece os Requisitos Funcionais e Não Funcionais do **HabitFlow**, garantindo a rastreabilidade bidirecional entre a concepção do produto, as Histórias de Usuário, os Casos de Uso e o Backlog de Engenharia (Issues).
+Este documento detalha os **Requisitos Funcionais (RF)** e os **Requisitos Não Funcionais (RNF)** do sistema **HabitFlow**, mantendo rastreabilidade direta com as Histórias de Usuário (`docs/user-stories.md`), Casos de Uso (`docs/casos-de-uso.md`) e o Backlog de Issues do GitHub.
 
 ---
 
 ## 1. Requisitos Funcionais (RF)
 
-Os requisitos funcionais definem as ações, comportamentos e serviços específicos que o software HabitFlow deve prover aos usuários.
+Os Requisitos Funcionais descrevem os comportamentos, funcionalidades e regras de negócio que o software deve executar.
 
-| Identificador | Título do Requisito | Descrição Detalhada | Prioridade (MoSCoW) |
-| :--- | :--- | :--- | :--- |
-| **[RF01]** | **Cadastrar Hábito** | O sistema deve permitir ao usuário cadastrar um novo hábito informando título obrigatório (ex.: "Ler 20 páginas"), descrição opcional, categoria (Saúde, Estudos, Produtividade, Finanças ou Outros) e meta de frequência semanal (dias por semana de 1 a 7). | Must Have |
-| **[RF02]** | **Listar Hábitos Ativos** | O sistema deve exibir a listagem de todos os hábitos ativos, apresentando seu identificador único, título, categoria, status de conclusão no dia corrente (Pendente ou Concluído) e a sequência atual (*current streak*). | Must Have |
-| **[RF03]** | **Atualizar Hábito** | O sistema deve permitir a alteração das informações cadastrais de um hábito existente (título, descrição, categoria e frequência alvo), preservando o histórico de conclusões preexistentes. | Should Have |
-| **[RF04]** | **Arquivar Hábito (Soft Delete)** | O sistema deve possibilitar o arquivamento de um hábito sem apagar fisicamente seus dados e histórico de conclusões, ocultando-o da listagem principal de acompanhamento diário. | Must Have |
-| **[RF05]** | **Registrar Conclusão Diária (Check-in)** | O sistema deve permitir que o usuário registre o cumprimento de um hábito para uma data específica (por padrão a data corrente), com horário registrado e notas opcionais (ex.: "Capítulo 4 concluído"). Não deve permitir duplicidade de check-in para a mesma data. | Must Have |
-| **[RF06]** | **Desfazer Conclusão (Check-out)** | O sistema deve permitir ao usuário revogar o check-in realizado em uma determinada data, recalculando imediatamente a sequência (*streak*) e a taxa de adesão. | Should Have |
-| **[RF07]** | **Calcular Streaks (Sequências)** | O sistema deve calcular automaticamente para cada hábito: (a) a sequência ininterrupta atual de dias concluídos (*current streak*); (b) o maior recorde histórico de dias consecutivos (*longest streak*). | Must Have |
-| **[RF08]** | **Filtrar por Categoria** | O sistema deve permitir a filtragem e agrupamento da visualização dos hábitos por sua categoria temática. | Should Have |
-| **[RF09]** | **Gerar Relatório de Desempenho** | O sistema deve computar e exibir métricas consolidadas: taxa percentual de adesão nos últimos 7 e 30 dias, total de check-ins acumulados e hábito mais consistente. | Should Have |
-| **[RF10]** | **Exportar e Importar Dados (Backup)** | O sistema deve permitir exportar todos os dados cadastrados e o histórico de check-ins para um arquivo no formato JSON padronizado, bem como restaurá-los. | Could Have |
+| Código | Título | Descrição Detalhada | Prioridade | Issue / US Relacionada |
+| :--- | :--- | :--- | :---: | :---: |
+| **[RF01]** | Cadastrar Hábito | O sistema deve permitir o cadastro de um novo hábito informando título obrigatório (mínimo de 3 caracteres), descrição opcional, categoria (`Saúde`, `Estudos`, `Produtividade`, `Mindfulness`, `Finanças`, `Outros`) e meta de frequência semanal (1 a 7 dias). | Alta | US01 / Issue #7 |
+| **[RF02]** | Listar e Filtrar Hábitos | O sistema deve listar todos os hábitos cadastrados, permitindo filtrar os resultados por categoria ou status (ativos/concluídos no dia) e buscar por termo no título. | Alta | US02 / Issue #8 |
+| **[RF03]** | Editar Hábito | O sistema deve permitir atualizar os dados cadastrais de um hábito existente (título, descrição, categoria e meta semanal) preservando seu histórico de *check-ins*. | Média | US03 / Issue #9 |
+| **[RF04]** | Excluir Hábito | O sistema deve permitir remover permanentemente um hábito e todo o seu histórico de registros mediante confirmação do usuário. | Média | US03 / Issue #9 |
+| **[RF05]** | Registrar Check-in Diário | O sistema deve permitir marcar ou desmarcar (*toggle*) a conclusão de um hábito em uma data específica (padrão: data atual `YYYY-MM-DD`), impedindo registros duplicados na mesma data. | Alta | US04 / Issue #10 |
+| **[RF06]** | Calcular Ofensiva (Streaks) | O sistema deve calcular automaticamente para cada hábito a sequência atual de dias consecutivos cumpridos (*current streak*) e o recorde histórico de dias consecutivos (*best streak*). | Alta | US05 / Issue #11 |
+| **[RF07]** | Exibir Dashboard de Estatísticas | O sistema deve disponibilizar um resumo consolidado contendo: total de hábitos ativos, total de hábitos concluídos hoje, taxa percentual de conclusão diária e maior ofensiva ativa do usuário. | Média | US05 / Issue #11 |
+| **[RF08]** | Validar Dados de Entrada | O sistema deve validar todas as requisições recebidas na API e no formulário web, retornando mensagens de erro claras (HTTP 400 / feedback visual) quando campos obrigatórios estiverem ausentes ou fora do formato esperado. | Alta | US01 / Issue #7 |
 
 ---
 
 ## 2. Requisitos Não Funcionais (RNF)
 
-Os requisitos não funcionais especificam restrições arquiteturais, critérios de qualidade, segurança e conformidade do sistema.
+Os Requisitos Não Funcionais definem os atributos de qualidade, restrições técnicas, desempenho e padrões arquiteturais do sistema.
 
-| Identificador | Categoria | Descrição Detalhada | Métrica / Critério de Aceitação |
+| Código | Categoria | Descrição Detalhada | Critério de Verificação |
 | :--- | :--- | :--- | :--- |
-| **[RNF01]** | **Desempenho** | O tempo de processamento de qualquer operação de leitura, escrita ou cálculo de streaks em memória local não deve exceder 100 milissegundos. | Latência média < 100 ms em execuções de testes de carga com até 500 hábitos e 10.000 check-ins. |
-| **[RNF02]** | **Persistência e Integridade** | Os dados devem ser persistidos em arquivo JSON durável utilizando escrita atômica (*atomic write via arquivo temporário seguido de rename*), prevenindo corrupção de dados em caso de encerramento abrupto. | Zero corrupção de dados comprovada em testes de interrupção de I/O. |
-| **[RNF03]** | **Usabilidade** | A interface em linha de comando (CLI) e os comandos do sistema devem fornecer mensagens claras, legíveis, com códigos de saída (*exit codes*) corretos e indicação visual de sucesso/erro. | Feedback imediato no terminal com mensagens descritivas para todas as operações. |
-| **[RNF04]** | **Confiabilidade e Testabilidade** | As regras de negócio críticas (cálculo de sequências ininterruptas, regras de transição de status e validações) devem ser cobertas por suíte de testes unitários automatizados. | Cobertura mínima de 80% das classes e métodos das camadas de domínio e serviço. |
-| **[RNF05]** | **Portabilidade** | A aplicação deve executar de forma transparente em sistemas operacionais Windows, Linux e macOS sem necessidade de alterações no código-fonte. | Suporte nativo em qualquer ambiente com Node.js versão 18 LTS ou superior. |
-| **[RNF06]** | **Manutenibilidade** | A arquitetura deve seguir o padrão em camadas e princípios SOLID, mantendo desacoplamento estrito entre domínio, persistência e interfaces de apresentação. | Zero acoplamento entre regras de domínio e mecanismo de I/O em disco. |
-| **[RNF07]** | **Segurança e Validação** | O sistema deve validar e sanitizar todas as entradas de dados (títulos em branco, caracteres de escape, limites de tamanho) antes de processá-los no domínio. | Rejeição graciosa de strings vazias, nulas ou formatos de data inválidos com exceções tipadas. |
-| **[RNF08]** | **Versionamento e Rastreabilidade** | O desenvolvimento deve seguir rigorosamente o padrão Git Flow, commits atômicos segundo a especificação Conventional Commits e controle de versão SemVer 2.0.0. | 100% dos commits no formato convencional e branches vinculadas às issues do backlog. |
+| **[RNF01]** | Desempenho | As rotas da API REST devem responder às requisições locais em tempo inferior a **100ms** para cargas de até 1.000 hábitos registrados. | Testes de integração e inspeção de tempo de resposta HTTP. |
+| **[RNF02]** | Persistência | Os dados de hábitos e histórico de *check-ins* devem ser persistidos em disco em formato estruturado (`JSON`), garantindo que nenhuma informação seja perdida ao reiniciar o servidor. | Reinicialização do serviço mantendo os dados salvos em `data/habits.json`. |
+| **[RNF03]** | Usabilidade e Responsividade | A interface web deve ser responsiva (adaptando-se a telas desktop a partir de 1024px e dispositivos móveis a partir de 360px) e permitir registrar um *check-in* diário com apenas **1 clique**. | Inspeção visual em diferentes resoluções e fluxo de clique único no card do hábito. |
+| **[RNF04]** | Manutenibilidade e Padrão de Código | O código-fonte deve ser modularizado em camadas (Rotas/Controllers, Serviços/Regras de Negócio e Persistência), utilizando nomenclatura clara e sem dependências desnecessárias. | Revisão da árvore de diretórios em `src/` e separação entre `habitService` e `server`. |
+| **[RNF05]** | Confiabilidade e Tratamento de Erros | A API deve utilizar códigos de status HTTP semânticos (`200 OK`, `201 Created`, `400 Bad Request`, `404 Not Found`, `500 Internal Server Error`) e nunca expor *stack traces* brutos ao usuário final. | Execução da suíte de testes automatizados verificando cenários de erro. |
+| **[RNF06]** | Portabilidade | O sistema deve ser executável em qualquer sistema operacional (Windows, Linux ou macOS) que possua Node.js (v18+) instalado, sem exigir instalação de SGBDs externos pesados. | Execução limpa via `npm install && npm start` em qualquer ambiente Node.js. |
 
 ---
 
 ## 3. Matriz de Rastreabilidade
 
-A matriz abaixo estabelece a relação direta entre os Requisitos Funcionais, Casos de Uso, Histórias de Usuário e as Issues do repositório:
-
-| Requisito Funcional | Caso de Uso | História de Usuário | Issue Vinculada |
-| :--- | :--- | :--- | :--- |
-| **[RF01]** Cadastrar Hábito | `UC01` | `US01` | Issue #07, #11 |
-| **[RF02]** Listar Hábitos Ativos | `UC02` | `US01`, `US03` | Issue #11, #13 |
-| **[RF03]** Atualizar Hábito | `UC01` | `US01` | Issue #11 |
-| **[RF04]** Arquivar Hábito | `UC04` | `US05` | Issue #11, #13 |
-| **[RF05]** Registrar Conclusão | `UC02` | `US02` | Issue #07, #12 |
-| **[RF06]** Desfazer Conclusão | `UC05` | `US07` | Issue #12 |
-| **[RF07]** Calcular Streaks | `UC03` | `US03` | Issue #09, #10 |
-| **[RF08]** Filtrar por Categoria | `UC02` | `US06` | Issue #11, #13 |
-| **[RF09]** Relatório de Desempenho | `UC03` | `US04` | Issue #14 |
-| **[RF10]** Exportar/Importar Dados | `UC06` | `US08` | Issue #08, #13 |
+| Requisito | Caso de Uso (`casos-de-uso.md`) | User Story (`user-stories.md`) | Módulo de Código (`src/`) | Issue no GitHub |
+| :---: | :---: | :---: | :--- | :---: |
+| **RF01 / RF08** | UC01 - Cadastrar Hábito | US01 | `src/services/habitService.js` | #7 |
+| **RF02** | UC02 - Consultar e Filtrar Hábitos | US02 | `src/services/habitService.js` | #8 |
+| **RF03 / RF04** | UC03 - Manter Hábito (Editar/Excluir) | US03 | `src/services/habitService.js` | #9 |
+| **RF05** | UC04 - Registrar Check-in Diário | US04 | `src/services/habitService.js` | #10 |
+| **RF06 / RF07** | UC05 - Visualizar Estatísticas e Streaks | US05 | `src/utils/streakCalculator.js` | #11 |
