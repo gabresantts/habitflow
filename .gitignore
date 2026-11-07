@@ -1,0 +1,34 @@
+# Dependências
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dados locais e temporários
+habitflow-data.json
+habitflow-data.json.tmp.*
+habitflow-test-data.json
+habitflow-test-data.json.tmp.*
+*.tmp
+
+# Cobertura de testes e relatórios
+coverage/
+.nyc_output/
+
+# Logs do sistema
+logs/
+*.log
+
+# Variáveis de ambiente
+.env
+.env.local
+.env.*.local
+
+# Arquivos do Sistema Operacional e IDEs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
